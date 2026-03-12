@@ -745,7 +745,7 @@ function tickARMixer(now) {
 
 const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-const AR_SPEED = 0.015;  // slow realistic speed for AR mode
+const AR_SPEED = 0.03;  // slow realistic speed for AR mode
 let preARSpeed = null;   // saves slider speed before AR entry
 
 viewer.addEventListener('ar-status', e => {
