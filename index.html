@@ -745,9 +745,18 @@ function tickARMixer(now) {
 
 const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
+const AR_SPEED = 0.005;  // slow realistic speed for AR mode
+let preARSpeed = null;   // saves slider speed before AR entry
+
 viewer.addEventListener('ar-status', e => {
   const status = e.detail.status;
   if (status === 'session-started') {
+    // Save current speed and switch to slow AR speed
+    preARSpeed = parseFloat(document.getElementById('speed')?.value) ?? 0.05;
+    if (speedSlider) speedSlider.value = AR_SPEED;
+    if (speedVal) speedVal.textContent = AR_SPEED + '×';
+    viewer.timeScale = AR_SPEED;
+
     viewer.animationName = 'SolarSystem';
     viewer.play();
     // Only manually tick the mixer on iOS — on Android (WebXR/scene-viewer)
@@ -761,6 +770,13 @@ viewer.addEventListener('ar-status', e => {
   }
   if (status === 'not-presenting') {
     if (arRafId) { cancelAnimationFrame(arRafId); arRafId = null; }
+    // Restore pre-AR speed
+    if (preARSpeed !== null) {
+      if (speedSlider) speedSlider.value = preARSpeed;
+      if (speedVal) speedVal.textContent = preARSpeed.toFixed(3).replace(/0+$/, '').replace(/\.$/, '') + '×';
+      viewer.timeScale = preARSpeed;
+      preARSpeed = null;
+    }
     viewer.play();
   }
 });
